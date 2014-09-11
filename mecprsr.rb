@@ -46,15 +46,13 @@ def determinar_cabecera(cadena = nil)
     return retornar
 end
 
-def get_range(hash, index)
+def get_range(arreglo_hash, index)
 
-    hash_temp = hash(index)
+    hash_temp = arreglo_hash[index]
     
     array_temp = hash_temp.values
     
-    range =  Range(array_temp[0][0]..array_temp[0][1])
-    
-    return range
+    return (array_temp[0][0]..array_temp[0][1])
 end
 
 
@@ -97,30 +95,45 @@ month = nil
 
 puts("Iterando sobre las páginas")
 
+linea_actual = []
 #tpage.each do |tp|
 #    txt = tp.text.lines
     new_page = true
+    escribiendo_linea = false
     for linea in txt
         if new_page then
             if linea[/^Mes /] then
                 # Se define la cabecera
                 new_page = false
-                puts "#{txt.size} -> '#{linea}'"
                 cabecera = determinar_cabecera(linea)
                 puts "La cabecera tiene #{cabecera.count} campos"
             end
         else
+            next if linea.strip.empty? 
             range = get_range(cabecera, 0) # Mes
-            new_line = ("" != linea[range].strip) ? true : false
+            new_line = !(linea[range].strip.empty?)
             if new_line then
-                
+                if escribiendo_linea then
+                    escribiendo_linea = false
+                    puts linea_actual # HERE!
+                else
+                    escribiendo_linea = true
+                    linea_actual = []
+                    (0..cabecera.count-1).each do |i|
+                        linea_actual << linea[get_range(cabecera,i)].strip
+                    end
+                end
             else
                 # es parte de esos campos compuestos
+                (0..cabecera.count-1).each do |i|
+                    t = linea[get_range(cabecera,i)]
+                    unless t.nil? then
+                        linea_actual[i] << t.strip
+                    end
+                end
             end
-            
         end
     end
-    
     
 #end
 

@@ -1,2 +1,5 @@
 Parser de la nómina de funcionarios del MEC
 
+Requiere la gema pdf-reader
+
+	gem install pdf-reader
