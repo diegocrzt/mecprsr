@@ -1,5 +1,8 @@
 Parser de la nómina de funcionarios del MEC
 
-Requiere la gema pdf-reader
+El parser limpia la salida de 
+ $ pdftotext -layout -l 1 -fixed 2 entrada.pdf salida.txt
 
-	gem install pdf-reader
+y genera un CSV (Realmente separado por punto y coma)
+
+

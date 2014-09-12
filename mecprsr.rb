@@ -18,6 +18,28 @@ def determinar_cabecera(cadena = nil)
     inicio = 0
     fin = inicio
     
+    #FIXME
+    j = 0
+    k = 0
+    #puts "'#{cadena}'"
+    while cadena[j] == "\s" do 
+        j = j + 1
+    end
+    
+    while cadena[j] != "\s" do
+        t = cadena[k]
+        cadena[k] = cadena[j]
+        cadena[j] = t
+        j = j + 1
+        k = k + 1
+    end
+    
+    # I know this is ugly, but ...
+    
+    cadena.gsub!(' Año','Año ')
+    
+    #FIXME
+    
     #puts "Iterando '#{cadena.size}' caracteres"
     (inicio..cadena.size-1).each do |indice|
         if cadena[indice] == "\s" then
@@ -43,6 +65,7 @@ def determinar_cabecera(cadena = nil)
             palabra << cadena[indice]
         end
     end
+    #puts retornar
     return retornar
 end
 
@@ -56,8 +79,10 @@ def get_range(arreglo_hash, index)
 end
 
 
-lector = PDF::Reader.new("funcionarios_docentes_201406.pdf")
+#lector = PDF::Reader.new("funcionarios_docentes_201406.pdf")
 
+
+entrada_texto = open("fc201406.txt","r")
 salida_texto = open("salida.txt","w")
 
 #tpage = lector.pages[0..1] 
@@ -88,19 +113,23 @@ salida_texto = open("salida.txt","w")
 
 
 
-tpage = [lector.page(1), lector.page(2)]
-#txt = salida_texto.each_line
+#tpage = [lector.page(1), lector.page(2)]
+txt = entrada_texto.each_line
 
 #month = nil
 
 linea_actual = []
-tpage.each do |tp|
-    txt = tp.text.lines
+#tpage.each do |tp|
+    #txt = tp.text.lines
     new_page = true
     escribiendo_linea = false
     for linea in txt
+        if linea[/^\s*MINISTERIO\s*DE\s*EDUCACION\s*/] then
+            new_page = true
+            next
+        end
         if new_page then
-            if linea[/^Mes /] then
+            if linea[/^\s*Mes /] then
                 # Se define la cabecera
                 new_page = false
                 cabecera = determinar_cabecera(linea)
@@ -123,7 +152,13 @@ tpage.each do |tp|
                     escribiendo_linea = true
                     linea_actual = []
                     (0..cabecera.count-1).each do |i|
-                        linea_actual << linea[get_range(cabecera,i)].strip
+                        if i == cabecera.count - 1 then
+                            last_range = get_range(cabecera,i)
+                            last_range = (last_range.min..linea.size-1)
+                            linea_actual << linea[last_range].strip
+                        else
+                            linea_actual << linea[get_range(cabecera,i)].strip
+                        end
                     end
                 end
             else
@@ -137,12 +172,12 @@ tpage.each do |tp|
             end
         end
     end
-end
+#end
 
 #lector.pages.each do |pagina|
 #    puts "Writting page #{pagina.number}"
 #    salida_texto.write(pagina.text)
 #    salida_texto.write('\n')
 #end
-
+entrada_texto.close
 salida_texto.close
