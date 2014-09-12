@@ -18,7 +18,7 @@ def determinar_cabecera(cadena = nil)
     inicio = 0
     fin = inicio
     
-    puts "Iterando '#{cadena.size}' caracteres"
+    #puts "Iterando '#{cadena.size}' caracteres"
     (inicio..cadena.size-1).each do |indice|
         if cadena[indice] == "\s" then
             if palabra_entera then
@@ -56,9 +56,9 @@ def get_range(arreglo_hash, index)
 end
 
 
-#lector = PDF::Reader.new("funcionarios_docentes_201406.pdf")
+lector = PDF::Reader.new("funcionarios_docentes_201406.pdf")
 
-salida_texto = open("salida.txt","r")
+salida_texto = open("salida.txt","w")
 
 #tpage = lector.pages[0..1] 
 # Improving test performance
@@ -88,16 +88,14 @@ salida_texto = open("salida.txt","r")
 
 
 
-#tpage = [lector.page(1), lector.page(2)]
-txt = salida_texto.lines
+tpage = [lector.page(1), lector.page(2)]
+#txt = salida_texto.each_line
 
-month = nil
-
-puts("Iterando sobre las páginas")
+#month = nil
 
 linea_actual = []
-#tpage.each do |tp|
-#    txt = tp.text.lines
+tpage.each do |tp|
+    txt = tp.text.lines
     new_page = true
     escribiendo_linea = false
     for linea in txt
@@ -106,7 +104,6 @@ linea_actual = []
                 # Se define la cabecera
                 new_page = false
                 cabecera = determinar_cabecera(linea)
-                puts "La cabecera tiene #{cabecera.count} campos"
             end
         else
             next if linea.strip.empty? 
@@ -115,7 +112,13 @@ linea_actual = []
             if new_line then
                 if escribiendo_linea then
                     escribiendo_linea = false
-                    puts linea_actual # HERE!
+                    #puts linea_actual # HERE!
+                    limit = linea_actual.size
+                    (0..limit-1).each do |k|
+                        salida_texto.write(linea_actual[k])
+                        salida_texto.write( k == limit -1 ? "\n":";")
+                        print '.'
+                    end
                 else
                     escribiendo_linea = true
                     linea_actual = []
@@ -127,15 +130,14 @@ linea_actual = []
                 # es parte de esos campos compuestos
                 (0..cabecera.count-1).each do |i|
                     t = linea[get_range(cabecera,i)]
-                    unless t.nil? then
-                        linea_actual[i] << t.strip
+                    unless t.nil? or t.strip.empty? then
+                        linea_actual[i] << (" " << t.strip)
                     end
                 end
             end
         end
     end
-    
-#end
+end
 
 #lector.pages.each do |pagina|
 #    puts "Writting page #{pagina.number}"
