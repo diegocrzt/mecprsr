@@ -22,6 +22,7 @@ def determinar_cabecera(cadena = nil)
 
   # FIXME
   # Necesitamos hacer esto para corregir la salida de pdftotext
+  # que agrega espacios al comienzo
   j = 0
   k = 0
   while cadena[j] == "\s" do
@@ -40,7 +41,7 @@ def determinar_cabecera(cadena = nil)
 
   cadena.gsub!(' Año', 'Año ')
 
-  #FIXME
+  # FIXME
 
   (inicio..cadena.size-1).each do |indice|
     if cadena[indice] == "\s"
@@ -67,6 +68,7 @@ def determinar_cabecera(cadena = nil)
       palabra << cadena[indice]
     end
   end
+
   retornar
 end
 
@@ -77,7 +79,15 @@ def get_range(arreglo_hash, index)
 
   array_temp = hash_temp.values
 
-  return (array_temp[0][0]..array_temp[0][1])
+  (array_temp[0][0]..array_temp[0][1])
+end
+
+def persistir(buffer_linea, salida_texto)
+  limit = buffer_linea.size
+  (0..limit-1).each do |k|
+    salida_texto.write(buffer_linea[k])
+    salida_texto.write(k == limit-1 ? "\n" : ";")
+  end
 end
 
 # BEGIN
@@ -94,14 +104,15 @@ def main(fichero_entrada, fichero_salida)
 
   txt = entrada_texto.each_line
 
-  linea_actual = []
+  buffer_linea = []
   new_page = true
-  escribiendo_linea = false
+  existe_linea_en_buffer = false
   for linea in txt
     if linea[/^\s*MINISTERIO\s*DE\s*EDUCACION\s*/] then
       new_page = true
       next
     end
+
     if new_page then
       if linea[/^\s*Mes /] then
         # Se define la cabecera
@@ -111,41 +122,48 @@ def main(fichero_entrada, fichero_salida)
     else
       next if linea.strip.empty?
       range = get_range(cabecera, 0) # Mes
-      new_line = !(linea[range].strip.empty?)
-      if new_line then
-        if escribiendo_linea then
-          escribiendo_linea = false
-          #puts linea_actual
-          limit = linea_actual.size
-          (0..limit-1).each do |k|
-            salida_texto.write(linea_actual[k])
-            salida_texto.write(k == limit-1 ? "\n" : ";")
-            #print '.'
-          end
-        else
-          escribiendo_linea = true
-          linea_actual = []
-          (0..cabecera.count-1).each do |i|
-            if i == cabecera.count - 1 then
-              last_range = get_range(cabecera, i)
-              last_range = (last_range.min..linea.size-1)
-              linea_actual << linea[last_range].strip
-            else
-              linea_actual << linea[get_range(cabecera, i)].strip
-            end
+      new_line_found = !(linea[range].strip.empty?)
+      if new_line_found then
+        # Es una nueva línea
+
+        if existe_linea_en_buffer then
+          persistir(buffer_linea, salida_texto)
+          # Ya no existe una línea en el buffer
+          #existe_linea_en_buffer = false
+        end
+
+        buffer_linea = []
+        (0..cabecera.count-1).each do |i|
+          if i == cabecera.count - 1 then # The last element
+            last_range = get_range(cabecera, i)
+            last_range = (last_range.min..linea.size-1)
+            buffer_linea << linea[last_range].strip
+          else # Non-last elements
+            buffer_linea << linea[get_range(cabecera, i)].strip
           end
         end
+        existe_linea_en_buffer = true
+        #buffer_linea.each { |l| print "#{l} "}
+        #print "\n"
+
       else
+        # No es nueva línea
         # es parte de esos campos compuestos
+        #print "Concatenar\n'#{linea}'\n"
+        #buffer_linea.each { |l| print "#{l} "}
+        #print "\n"
         (0..cabecera.count-1).each do |i|
           t = linea[get_range(cabecera, i)]
           unless t.nil? or t.strip.empty? then
-            linea_actual[i] << (" " << t.strip)
+            buffer_linea[i] << (" " << t.strip)
           end
         end
       end
     end
   end
+
+  # La última línea en el buffer
+  persistir(buffer_linea, salida_texto)
 
   entrada_texto.close
   salida_texto.close
@@ -177,6 +195,9 @@ if $0 == __FILE__ #RUBY MAGIC!
     salida << '.csv'
   end
 
+  # For debug only
+  #entrada = 'input_test'
+  #salida = 'salida_test'
   ret_val = main(entrada,salida)
 
   puts "El resultado fue #{ret_val}"

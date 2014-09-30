@@ -18,9 +18,9 @@ También se requiere alguna versión moderna de ruby
 
 Tiempo que toma el parseado completo de un documento
 
-real	4m36.601s
-user	4m33.940s
-sys	0m2.392s
+real	4m49.947s
+user	4m45.420s
+sys	0m2.880s
 
 se puede probar el parser con wrapper en sh
 
