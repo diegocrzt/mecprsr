@@ -4,5 +4,31 @@ El parser limpia la salida de
  $ pdftotext -layout -l 1 -fixed 2 entrada.pdf salida.txt
 
 y genera un CSV (Realmente separado por punto y coma)
+por lo que se requiere tener pdftotext instalado, es
+posible que en algunas distribuciones este programa
+venga en conjunto con xpdf
 
+Debian-like
+# apt-get install xpdf
+
+RedHat-like
+# yum install xpdf
+
+También se requiere alguna versión moderna de ruby
+
+Tiempo que toma el parseado completo de un documento
+
+real	4m36.601s
+user	4m33.940s
+sys	0m2.392s
+
+se puede probar el parser con wrapper en sh
+
+$ ./mecprsr.sh funcionarios_docentes_AAAAmm.pdf
+
+
+TODO:
+Se podría parametrizar si se requiere o no la impresión de
+la cabecera, si es que se quiere usar punto y coma u otro 
+separador
 
