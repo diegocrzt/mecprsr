@@ -1,1 +1,2 @@
 remote: https://mirror.openshift.com/
+gem 'sinatra'
