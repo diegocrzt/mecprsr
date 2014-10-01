@@ -1,0 +1,20 @@
+<html>
+<head>
+  <title>Cargar PDF del MEC</title>
+</head>
+<body>
+<h1>Cargar PDF de Nómina de Funcionarios Docentes</h1>
+Descargue alguno de los ficheros PDF que existen aquí
+<a href="http://datos.mec.gov.py/data/nomina_docentes">Nómina de Funcionarios
+   Docentes</a>, y subalo a este servidor con el siguiente formulario
+<hr/>
+<form action="/upload" method="POST" enctype="multipart/form-data" >
+  <div align="center">
+    <br/>
+    <input type="file" name="file">
+    <input type="submit" value="Subir PDF">
+    <br/>
+  </div>
+</form>
+</body>
+</html>

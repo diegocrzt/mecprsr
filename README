@@ -26,6 +26,14 @@ se puede probar el parser con wrapper en sh
 
 $ ./mecprsr.sh funcionarios_docentes_AAAAmm.pdf
 
+Para desplegar la aplicación web puede probar 
+
+ruby server.rb
+
+pero considere que necesita instalar sinatra (framework web)
+
+gem install sinatra
+
 
 TODO:
 Se podría parametrizar si se requiere o no la impresión de

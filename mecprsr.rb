@@ -83,30 +83,36 @@ def get_range(arreglo_hash, index)
 end
 
 def persistir(buffer_linea, salida_texto, separador, cad_delim, es_cabecera = false)
-    # indices de lo datos que son números
-    numeric_fields = [1, 10, 12, 13, 14]
-    
+  # indices de lo datos que son números
+  numeric_fields = [1, 10, 12, 13, 14]
+
   limit = buffer_linea.size
   (0..limit-1).each do |k|
-    unless es_cabecera 
-        format_field =  if numeric_fields.include?(k)
-                            buffer_linea[k].gsub('.','')
-                        else
-                            '"' << buffer_linea[k] << '"'
-                        end
+    unless es_cabecera
+      format_field = if numeric_fields.include?(k)
+                       buffer_linea[k].gsub('.', '')
+                     else
+                       t = buffer_linea[k].gsub('"','')
+                       #t = buffer_linea[k]
+                       lcd = String.new(cad_delim)
+                       rcd = String.new(cad_delim)
+                       lcd << t << rcd
+                     end
     else
-        format_field = '"' << buffer_linea[k] << '"'
-        format_field.gsub!(' ','_')
+      lcd = String.new(cad_delim)
+      rcd = String.new(cad_delim)
+      format_field = lcd << buffer_linea[k] << rcd
+      format_field.gsub!(' ', '_')
     end
-    
+
     salida_texto.write(format_field)
     salida_texto.write(k == limit-1 ? "\n" : separador)
   end
 end
 
 # BEGIN
-def main(fichero_entrada, fichero_salida, cabecera = true, 
-            separador = ';', cad_delim = '')
+def main(fichero_entrada, fichero_salida, cabecera = true,
+    separador = ';', cad_delim = '"')
   begin
     entrada_texto = open(fichero_entrada, "r")
   rescue => e
@@ -114,13 +120,19 @@ def main(fichero_entrada, fichero_salida, cabecera = true,
     puts "No se pudo abrir el fichero #{fichero_entrada} verifique que exista"
     return 'FALLO AL INTENTAR ABRIR EL FICHERO'
   end
-  
-  if separador.class != String then return 'El separador debe ser una cadena' end
-  
-  if separador.size == 0 then return 'El separador no puede ser vacío' end
-  
-  if cad_delim.class != String then return 'El delimitador de cadenas debe ser una cadena' end
-  
+
+  if separador.class != String then
+    return 'El separador debe ser una cadena'
+  end
+
+  if separador.size == 0 then
+    return 'El separador no puede ser vacío'
+  end
+
+  if cad_delim.class != String then
+    return 'El delimitador de cadenas debe ser una cadena'
+  end
+
   if cabecera.class != FalseClass and cabecera.class != TrueClass and cabecera.class != NilClass
     return 'El indicador de cabecera debe ser booleano'
   end
@@ -145,24 +157,24 @@ def main(fichero_entrada, fichero_salida, cabecera = true,
         new_page = false
         cabecera = determinar_cabecera(linea)
         unless cabecera_escrita
-            cabecera_list = []
-            cabecera.each do |cab|
-                for k, v in cab
-                    cabecera_list << k
-                end
+          cabecera_list = []
+          cabecera.each do |cab|
+            for k, v in cab
+              cabecera_list << k
             end
-            persistir(cabecera_list,salida_texto,separador, cad_delim, es_cabecera=true)
-            cabecera_escrita = true
+          end
+          persistir(cabecera_list, salida_texto, separador, cad_delim, es_cabecera=true)
+          cabecera_escrita = true
         end
       end
     else
       next if linea.strip.empty?
       range = get_range(cabecera, 0) # Mes
       new_line_found = !(linea[range].strip.empty?)
-      
+
       if new_line_found then
         # Es una nueva línea
-        
+
         if existe_linea_en_buffer then
           persistir(buffer_linea, salida_texto, separador, cad_delim)
           # De aquí en más siempre habrá una línea en el buffer
@@ -178,13 +190,13 @@ def main(fichero_entrada, fichero_salida, cabecera = true,
             buffer_linea << linea[get_range(cabecera, i)].strip
           end
         end
-        
+
         existe_linea_en_buffer = true
-        
+
       else
         # No es nueva línea
         # es parte de esos campos compuestos
-        
+
         (0..cabecera.count-1).each do |i|
           t = linea[get_range(cabecera, i)]
           unless t.nil? or t.strip.empty? then
@@ -227,11 +239,11 @@ if $0 == __FILE__ #RUBY MAGIC!
     end
     salida << '.csv'
   end
-  
+
   # For debug only
   #entrada = 'input_test'
   #salida = 'salida_test'
-  ret_val = main(entrada,salida)
+  ret_val = main(entrada, salida)
 
   puts "El resultado fue #{ret_val}"
 end
