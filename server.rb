@@ -2,7 +2,6 @@
 # encoding: utf-8
 
 # Front-End del parser
-<<<<<<< HEAD
 require 'sinatra/base'
 require './mecprsr'
 
