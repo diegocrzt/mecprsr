@@ -2,11 +2,11 @@
 # encoding: utf-8
 
 # Front-End del parser
+<<<<<<< HEAD
 require 'sinatra/base'
 require './mecprsr'
 
 
-#if $0 == __FILE__ #RUBY MAGIC!
 class FrontEndApp < Sinatra::Base
 
   configure do
@@ -34,11 +34,6 @@ class FrontEndApp < Sinatra::Base
     session[:file] = file_name
     return 'The file was successfully uploaded! <a href="/csv">GET CSV<>'
   end
-#end
 
   run! if app_file == $0
 end
-
-
-
-
