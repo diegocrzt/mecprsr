@@ -6,7 +6,7 @@ require 'sinatra'
 require './mecprsr'
 
 
-if $0 == __FILE__ #RUBY MAGIC!
+#if $0 == __FILE__ #RUBY MAGIC!
   print "Running #{$0}"
 
   enable :sessions
@@ -31,7 +31,7 @@ if $0 == __FILE__ #RUBY MAGIC!
     session[:file] = file_name
     return 'The file was successfully uploaded! <a href="/csv">GET CSV<>'
   end
-end
+#end
 
 
 
