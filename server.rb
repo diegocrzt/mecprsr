@@ -10,7 +10,7 @@ require './mecprsr'
 class FrontEndApp < Sinatra::Base
 
   configure do
-  	print "Running #{$0}"
+  	#print "Running #{$0}"
   	enable :sessions
   end
 

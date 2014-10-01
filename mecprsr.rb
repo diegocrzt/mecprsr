@@ -116,8 +116,8 @@ def main(fichero_entrada, fichero_salida, cabecera = true,
   begin
     entrada_texto = open(fichero_entrada, "r")
   rescue => e
-    puts e.message
-    puts "No se pudo abrir el fichero #{fichero_entrada} verifique que exista"
+    #puts e.message
+    #puts "No se pudo abrir el fichero #{fichero_entrada} verifique que exista"
     return 'FALLO AL INTENTAR ABRIR EL FICHERO'
   end
 
