@@ -1,0 +1,31 @@
+#menu{
+	
+	height: 70px;
+	float: right;
+}
+.logo {
+
+	width: 350px;
+}
+ ul li { 
+ 	display: inline;	
+	background-color:#150B52;
+	padding: 30px;
+	color:#d3d3d3;
+	cursor: pointer;
+  } 
+
+
+  .cabecera {
+
+  	width: 29%;
+  	float: left;
+  }
+
+
+header{
+
+	position: relative;
+	overflow: hidden;
+}
+ 
